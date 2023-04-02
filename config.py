@@ -60,11 +60,11 @@ __C.DIR.OUT_PATH = './output'
 __C.NETWORK = edict()
 __C.NETWORK.LEAKY_VALUE = .2
 __C.NETWORK.TCONV_USE_BIAS = False
-__C.NETWORK.INIT_BACKBONE = True  # use pretrained resnet50 / densenet121
+__C.NETWORK.INIT_BACKBONE = True  # use pretrained resnet50
 __C.NETWORK.USE_REFINER = True
 __C.NETWORK.USE_MERGER = True
 
-__C.NETWORK.MERGER_TYPE = 2  # 1 for base; 2 for pre-merger; 3 for multi-level merger  # for train only
+__C.NETWORK.MERGER_TYPE = 2  # 1 for base; 2 for pre-merger  # for train only
 
 
 #
@@ -73,7 +73,7 @@ __C.NETWORK.MERGER_TYPE = 2  # 1 for base; 2 for pre-merger; 3 for multi-level m
 __C.TRAIN = edict()
 __C.TRAIN.RESUME_TRAIN = False
 __C.TRAIN.LOAD_MERGER = False
-__C.TRAIN.NUM_EPOCHS = 220
+__C.TRAIN.NUM_EPOCHS = 200
 __C.TRAIN.BRIGHTNESS = .4
 __C.TRAIN.CONTRAST = .4
 __C.TRAIN.SATURATION = .4
@@ -101,13 +101,9 @@ __C.TRAIN.GAMMA = .1
 __C.TRAIN.SAVE_FREQ = 10  # weights will be overwritten every save_freq epoch
 __C.TRAIN.SHOW_TRAIN_STATE = 1000
 __C.TRAIN.UPDATE_N_VIEWS_RENDERING_PER_EPOCH = False
-__C.TRAIN.UPDATE_N_VIEWS_RENDERING_PER_ITERATION = False
+__C.TRAIN.UPDATE_N_VIEWS_RENDERING_PER_ITERATION = True
 __C.TRAIN.FIX_MERGER_FOR_1_VIEW = True
 
-__C.TRAIN.MULTI_LEVEL_MEAN_SUPERVISE = False
-__C.TRAIN.MULTI_LEVEL_WEIGHTED_SUPERVISE = False
-__C.TRAIN.SOFT_DIVE_LOSS_WEIGHT = None  # 0.1
-__C.TRAIN.PRECISION_LOSS_WEIGHT = None  # 0.1
 __C.TRAIN.PR_LOSS_WEIGHT = None  # None or 0.5
 
 
@@ -123,7 +119,7 @@ __C.TEST.VOXEL_THRESH = [.2, .3, .4, .5]
 # Reduce branches
 #
 __C.REDUCE = edict()
-__C.REDUCE.MLP_DIM = [1024, 256, 2]  # [1024, 256, 5]  # [1024]
+__C.REDUCE.MLP_DIM = [1024, 256, 5]
 __C.REDUCE.MATRIX_OPERATION = False
 __C.REDUCE.LEARNING_RATE = 2e-3
 __C.REDUCE.GAMMA = .1
