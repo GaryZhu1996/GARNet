@@ -68,11 +68,6 @@ def main():
     
     assert not (cfg.TRAIN.UPDATE_N_VIEWS_RENDERING_PER_EPOCH and
                 cfg.TRAIN.UPDATE_N_VIEWS_RENDERING_PER_ITERATION)
-    # assert not (cfg.TRAIN.MULTI_LEVEL_MEAN_SUPERVISE and
-    #             cfg.TRAIN.MULTI_LEVEL_WEIGHTED_SUPERVISE)
-    # assert not (cfg.TRAIN.SOFT_DIVE_LOSS_WEIGHT is not None and
-    #             cfg.TRAIN.PRECISION_LOSS_WEIGHT is not None and
-    #             cfg.TRAIN.PR_LOSS_WEIGHT is not None)
 
     # Set GPU to use
     if type(cfg.CONST.DEVICE) == str:
@@ -97,7 +92,7 @@ def main():
 
 if __name__ == '__main__':
     if sys.version_info < (3, 0):
-        raise Exception("Please follow the installation instruction on 'https://github.com/hzxie/Pix2Vox'")
+        raise Exception("")
 
     logging.basicConfig(format='[%(levelname)s] %(asctime)s %(message)s', level=logging.INFO)
     main()
