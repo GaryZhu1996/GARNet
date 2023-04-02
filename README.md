@@ -2,9 +2,9 @@
 
 This repository contains the source code for the paper [GARNet: Global-Aware Multi-View 3D Reconstruction Network and the Cost-Performance Tradeoff](https://arxiv.org/abs/2211.02299).
 
-[Overview](/figures/overview.pdf)
+![Overview](/figures/overview.pdf)
 
-[Global-Aware Generator](/figures/global_aware_generator.pdf)
+![Global-Aware Generator](/figures/global_aware_generator.pdf)
 
 
 ## Cite this work
