@@ -29,10 +29,10 @@ We use the [ShapeNet](https://www.shapenet.org/) in our experiments, which are a
 
 The pretrained models on ShapeNet are available as follows:
 
-- GARNet
-- GARNet+
-- IMB for GARNet
-- IMB for GARNet+
+- [GARNet](https://drive.google.com/file/d/1M-uxpQVVYDdWgr0MWfoTnxsu_53p7SAW/view?usp=share_link)
+- [GARNet+](https://drive.google.com/file/d/1EtjpJIkS9kVQ1QZcqJfAeVaBNzD_VUUs/view?usp=share_link)
+- [IMB for GARNet](https://drive.google.com/file/d/1yhIzE5oJLdjo24a8E6RElj3mRdOxDvy-/view?usp=share_link)
+- [IMB for GARNet+](https://drive.google.com/file/d/1vQhMfzPajtFrxJsoM3JkJH-Hsoq_xTKD/view?usp=share_link)
 
 ## Prerequisites
 
