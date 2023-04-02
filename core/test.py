@@ -17,22 +17,10 @@ import utils.helpers
 import core.pipeline_test as pipeline
 
 from models.encoder import Encoder
-
-# from models.decoder import Decoder
 from models.decoder_pre_merger import Decoder
-# from models.decoder_pre_merger_sa import Decoder
-# from models.decoder_multi_merger_5fusion import Decoder
+from models.refiner_3dresunet import Refiner
+from models.merger_pre_merger import Merger
 
-from models.refiner import Refiner
-# from models.refiner_resunet import Refiner
-
-from models.merger import Merger
-# from models.merger_concat_res_pre_merger import Merger
-# from models.merger_concat_res_pre_merger_with_supervise import Merger
-# from models.merger_concat_res_multi_level_fusion import Merger
-
-from losses.soft_dice_loss import SoftDiceLoss
-from losses.precision_loss import PrecisionLoss
 from losses.pr_loss import PRLoss
 from utils.average_meter import AverageMeter
 
@@ -63,12 +51,6 @@ def test_net(cfg,
 
     # Set up loss functions
     bce_loss = torch.nn.BCELoss()
-    if cfg.TRAIN.SOFT_DIVE_LOSS_WEIGHT is not None:
-        additional_loss = SoftDiceLoss()
-        additional_loss_weight = cfg.TRAIN.SOFT_DIVE_LOSS_WEIGHT
-    if cfg.TRAIN.PRECISION_LOSS_WEIGHT is not None:
-        additional_loss = PrecisionLoss()
-        additional_loss_weight = cfg.TRAIN.PRECISION_LOSS_WEIGHT
     if cfg.TRAIN.PR_LOSS_WEIGHT is not None:
         additional_loss = PRLoss()
         additional_loss_weight = cfg.TRAIN.PR_LOSS_WEIGHT
@@ -97,52 +79,18 @@ def test_net(cfg,
 
             # Test the encoder, decoder, refiner and merger
             image_features = encoder(rendering_images)
-
-            if not cfg.NETWORK.BI_MERGER:
-                raw_features, generated_volume = decoder(image_features)
-            else:
-                raw_features, generated_volume, fusion_features = decoder(image_features)
+            raw_features, generated_volume = decoder(image_features)
 
             if cfg.NETWORK.USE_MERGER and epoch_idx >= cfg.TRAIN.EPOCH_START_USE_MERGER:
-                if cfg.TRAIN.MULTI_LEVEL_MEAN_SUPERVISE and cfg.TRAIN.MULTI_LEVEL_WEIGHTED_SUPERVISE:
-                    generated_volume, fusion_volumes = \
-                        merger(raw_features, generated_volume)
-                    fusion_volumes = (generated_volume + fusion_volumes) / 2
-                elif cfg.TRAIN.MULTI_LEVEL_MEAN_SUPERVISE:
-                    generated_volume, fusion_volumes = merger(raw_features, generated_volume)
-                elif cfg.TRAIN.MULTI_LEVEL_WEIGHTED_SUPERVISE:
-                    generated_volume, fusion_volumes = merger(raw_features, generated_volume, True)
-                elif cfg.NETWORK.BI_MERGER:
-                    generated_volume = merger(raw_features, generated_volume, fusion_features)
-                else:
-                    generated_volume = merger(raw_features, generated_volume)
+                generated_volume = merger(raw_features, generated_volume)
             else:
                 generated_volume = torch.mean(generated_volume, dim=1)
 
-            if cfg.TRAIN.MULTI_LEVEL_MEAN_SUPERVISE or cfg.TRAIN.MULTI_LEVEL_WEIGHTED_SUPERVISE:
-                encoder_loss = bce_loss(generated_volume if fusion_volumes is None else fusion_volumes,
-                                        ground_truth_volume) * 10
-            elif not cfg.NETWORK.BI_MERGER:
-                encoder_loss = bce_loss(generated_volume if not cfg.TRAIN.MULTI_LEVEL_MEAN_SUPERVISE else fusion_volumes,
-                                        ground_truth_volume) * 10
-            else:
-                encoder_loss = bce_loss(generated_volume,
-                                        ground_truth_volume.unsqueeze(dim=1).expand(-1, 2, -1, -1, -1)) * 10
+            encoder_loss = bce_loss(generated_volume, ground_truth_volume) * 10
 
             if cfg.NETWORK.USE_REFINER and epoch_idx >= cfg.TRAIN.EPOCH_START_USE_REFINER:
-                if cfg.NETWORK.BI_MERGER and generated_volume.shape[1] == 1:
-                    generated_volume = refiner(generated_volume.unsqueeze(dim=1).expand(-1, 2, -1, -1, -1))
-                else:
-                    generated_volume = refiner(generated_volume)
-                if cfg.TRAIN.SOFT_DIVE_LOSS_WEIGHT is not None \
-                        or cfg.TRAIN.PRECISION_LOSS_WEIGHT is not None \
-                        or cfg.TRAIN.PR_LOSS_WEIGHT is not None:
-                    add_loss = additional_loss(generated_volume, ground_truth_volume) * additional_loss_weight
-                    b_loss = bce_loss(generated_volume, ground_truth_volume) * 10
-                    refiner_loss = add_loss + b_loss
-                    # logging.info('DiceLoss = %.4f BCELoss = %.4f' % (d_loss, b_loss))
-                else:
-                    refiner_loss = bce_loss(generated_volume, ground_truth_volume) * 10
+                generated_volume = refiner(generated_volume)
+                refiner_loss = bce_loss(generated_volume, ground_truth_volume) * 10
             else:
                 refiner_loss = encoder_loss
 
