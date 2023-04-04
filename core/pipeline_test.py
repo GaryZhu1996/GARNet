@@ -13,21 +13,6 @@ import utils.data_transforms
 import utils.helpers
 
 
-def reduce_branch_kmeans(features, left_view_num):
-    num, dim = features.shape
-    c = features[torch.randperm(num)[:left_view_num]]
-    for i in range(20):
-        a = ((features[:, None, :] - c[None, :, :]) ** 2).sum(-1).argmin(1)
-        c = torch.stack([features[a == k].mean(0) for k in range(left_view_num)])
-        nanix = torch.any(torch.isnan(c), dim=1)
-        ndead = nanix.sum().item()
-        c[nanix] = features[torch.randperm(num)[:ndead]]
-    distance = euclidean_distances(features, c).cpu().numpy()
-    views = np.argmin(distance, axis=0)
-    views.sort()
-    return views
-
-
 def reduce_branch_fps(features, left_view_num):
     samples = []
     remaining = list(range(features.shape[0]))
