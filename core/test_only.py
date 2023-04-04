@@ -51,7 +51,6 @@ def test_net(cfg):
     merger.eval()
 
     for_tqdm = tqdm(enumerate(test_data_loader), total=n_samples)
-    # for sample_idx, (taxonomy_id, sample_name, rendering_images, ground_truth_volume) in enumerate(test_data_loader):
     start_time = time()
     for sample_idx, (taxonomy_id, sample_name, rendering_images, ground_truth_volume) in for_tqdm:
         taxonomy_id = taxonomy_id[0] if isinstance(taxonomy_id[0], str) else taxonomy_id[0].item()
