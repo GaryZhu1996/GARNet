@@ -44,7 +44,7 @@ __C.CONST.N_VIEWS_RENDERING = 3
 __C.CONST.NUM_WORKER = 30  # number of data workers
 __C.CONST.WEIGHTS = 'pths/garnet.pth'
 __C.CONST.VIEWS_AFTER_REDUCTION = None  # for test only
-__C.CONST.IMB_WEIGHTS = None  # 'pth/imb_for_garnet.pth'
+__C.CONST.IMB_WEIGHTS = None  # 'pths/imb_for_garnet.pth'
 
 
 #
