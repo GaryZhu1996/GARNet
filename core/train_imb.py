@@ -21,7 +21,7 @@ from models.decoder_pre_merger import Decoder
 from models.refiner_3dresunet import Refiner
 from models.merger_pre_merger import Merger
 
-from models.imb import MLP
+from models.mapping_mlp_v3 import MLP
 
 
 inference_model_path = './pth/garnet.pth'
