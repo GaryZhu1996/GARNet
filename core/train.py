@@ -51,29 +51,29 @@ def train_net(cfg):
     else:
         encoder_solver, decoder_solver, pre_merger_solver, refiner_solver, merger_solver = \
             pipeline.solver(cfg, encoder, decoder, refiner, merger)
-    
-    # set up learning rate scheduler with warm up
-    lambda_encoder = lambda cur_iter: (cur_iter + 1) / cfg.TRAIN.WARM_UP_EPOCH \
-        if cur_iter < cfg.TRAIN.WARM_UP_EPOCH \
-        else cfg.TRAIN.GAMMA ** len([m for m in cfg.TRAIN.ENCODER_LR_MILESTONES if m <= cur_iter])
-    lambda_decoder = lambda cur_iter: (cur_iter + 1) / cfg.TRAIN.WARM_UP_EPOCH \
-        if cur_iter < cfg.TRAIN.WARM_UP_EPOCH \
-        else cfg.TRAIN.GAMMA ** len([m for m in cfg.TRAIN.DECODER_LR_MILESTONES if m <= cur_iter])
-    lambda_refiner = lambda cur_iter: (cur_iter + 1) / cfg.TRAIN.WARM_UP_EPOCH \
-        if cur_iter < cfg.TRAIN.WARM_UP_EPOCH \
-        else cfg.TRAIN.GAMMA ** len([m for m in cfg.TRAIN.REFINER_LR_MILESTONES if m <= cur_iter])
-    lambda_merger = lambda cur_iter: (cur_iter + 1) / cfg.TRAIN.WARM_UP_EPOCH \
-        if cur_iter < cfg.TRAIN.WARM_UP_EPOCH \
-        else cfg.TRAIN.GAMMA ** len([m for m in cfg.TRAIN.MERGER_LR_MILESTONES if m <= cur_iter])
-    encoder_lr_scheduler = torch.optim.lr_scheduler.LambdaLR(encoder_solver, lr_lambda=lambda_encoder)
-    decoder_lr_scheduler = torch.optim.lr_scheduler.LambdaLR(decoder_solver, lr_lambda=lambda_decoder)
-    refiner_lr_scheduler = torch.optim.lr_scheduler.LambdaLR(refiner_solver, lr_lambda=lambda_refiner)
-    merger_lr_scheduler = torch.optim.lr_scheduler.LambdaLR(merger_solver, lr_lambda=lambda_merger)
+
+    # Set up learning rate scheduler to decay learning rates dynamically
+    encoder_lr_scheduler = \
+        torch.optim.lr_scheduler.MultiStepLR(encoder_solver,
+                                             milestones=cfg.TRAIN.ENCODER_LR_MILESTONES,
+                                             gamma=cfg.TRAIN.GAMMA)
+    decoder_lr_scheduler = \
+        torch.optim.lr_scheduler.MultiStepLR(decoder_solver,
+                                             milestones=cfg.TRAIN.DECODER_LR_MILESTONES,
+                                             gamma=cfg.TRAIN.GAMMA)
     if cfg.NETWORK.MERGER_TYPE != 1:
-        lambda_pre_merger = lambda cur_iter: (cur_iter + 1) / cfg.TRAIN.WARM_UP_EPOCH \
-            if cur_iter < cfg.TRAIN.WARM_UP_EPOCH \
-            else cfg.TRAIN.GAMMA ** len([m for m in cfg.TRAIN.MERGER_LR_MILESTONES if m <= cur_iter])
-        pre_merger_lr_scheduler = torch.optim.lr_scheduler.LambdaLR(pre_merger_solver, lr_lambda=lambda_pre_merger)
+        pre_merger_lr_scheduler = \
+            torch.optim.lr_scheduler.MultiStepLR(pre_merger_solver,
+                                                 milestones=cfg.TRAIN.MERGER_LR_MILESTONES,
+                                                 gamma=cfg.TRAIN.GAMMA)
+    refiner_lr_scheduler = \
+        torch.optim.lr_scheduler.MultiStepLR(refiner_solver,
+                                             milestones=cfg.TRAIN.REFINER_LR_MILESTONES,
+                                             gamma=cfg.TRAIN.GAMMA)
+    merger_lr_scheduler = \
+        torch.optim.lr_scheduler.MultiStepLR(merger_solver,
+                                             milestones=cfg.TRAIN.MERGER_LR_MILESTONES,
+                                             gamma=cfg.TRAIN.GAMMA)
     
     # Set up loss functions
     bce_loss = torch.nn.BCELoss()
