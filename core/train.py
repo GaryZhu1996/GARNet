@@ -230,7 +230,7 @@ def train_net(cfg):
         iou = test_net(cfg, epoch_idx + 1, val_data_loader, val_writer,
                        encoder, decoder, refiner, merger)
         
-        # Save weights to file  #保存模型
+        # Save weights to file
         if (epoch_idx + 1) % cfg.TRAIN.SAVE_FREQ == 0 or iou > best_iou:
             file_name = 'checkpoint-epoch-%03d.pth' % (epoch_idx + 1)
             if iou > best_iou:
