@@ -17,10 +17,10 @@ from datetime import datetime as dt
 def modify_lr_strategy(cfg, current_epoch):
     milestone_lists = [cfg.TRAIN.ENCODER_LR_MILESTONES, cfg.TRAIN.DECODER_LR_MILESTONES]
     init_lr_list = [cfg.TRAIN.ENCODER_LEARNING_RATE, cfg.TRAIN.DECODER_LEARNING_RATE]
-    if cfg.NETWORK.USE_REFINER:  # 设置是否启用refiner，默认开启
+    if cfg.NETWORK.USE_REFINER:
         milestone_lists.append(cfg.TRAIN.REFINER_LR_MILESTONES)
         init_lr_list.append(cfg.TRAIN.REFINER_LEARNING_RATE)
-    if cfg.NETWORK.USE_MERGER:  # 设置是否启用merger，默认开启
+    if cfg.NETWORK.USE_MERGER:
         milestone_lists.append(cfg.TRAIN.MERGER_LR_MILESTONES)
         init_lr_list.append(cfg.TRAIN.MERGER_LEARNING_RATE)
     current_milestone_list = []
@@ -45,35 +45,28 @@ def modify_lr_strategy(cfg, current_epoch):
 
 
 def load_data(cfg):
-    # Set up data augmentation  #数据扩充
+    # Set up data augmentation
     IMG_SIZE = cfg.CONST.IMG_H, cfg.CONST.IMG_W
     CROP_SIZE = cfg.CONST.CROP_IMG_H, cfg.CONST.CROP_IMG_W
     train_transforms = utils.data_transforms.Compose([
         utils.data_transforms.RandomRotation(cfg.TRAIN.RANDOM_ROTATION),
-        utils.data_transforms.RandomCrop(IMG_SIZE, CROP_SIZE),  # not for Pix3D
-        # utils.data_transforms.CenterCrop(IMG_SIZE, CROP_SIZE),  # for Pix3D
-        utils.data_transforms.RandomBackground(cfg.TRAIN.RANDOM_BG_COLOR_RANGE),  # not for Pix3D
-        utils.data_transforms.ColorJitter(cfg.TRAIN.BRIGHTNESS, cfg.TRAIN.CONTRAST, cfg.TRAIN.SATURATION),  # not for Pix3D
-        utils.data_transforms.RandomNoise(cfg.TRAIN.NOISE_STD),  # not for Pix3D
+        utils.data_transforms.RandomCrop(IMG_SIZE, CROP_SIZE),
+        utils.data_transforms.RandomBackground(cfg.TRAIN.RANDOM_BG_COLOR_RANGE),
+        utils.data_transforms.ColorJitter(cfg.TRAIN.BRIGHTNESS, cfg.TRAIN.CONTRAST, cfg.TRAIN.SATURATION),
+        utils.data_transforms.RandomNoise(cfg.TRAIN.NOISE_STD),
         utils.data_transforms.Normalize(mean=cfg.DATASET.MEAN, std=cfg.DATASET.STD),
         utils.data_transforms.RandomFlip(),
-        utils.data_transforms.RandomPermuteRGB(),  # not for Pix3D
+        utils.data_transforms.RandomPermuteRGB(),
         utils.data_transforms.ToTensor(),
     ])
-    # val_transforms = utils.data_transforms.Compose([
-    #     utils.data_transforms.CenterCrop(IMG_SIZE, CROP_SIZE),
-    #     utils.data_transforms.RandomBackground(cfg.TEST.RANDOM_BG_COLOR_RANGE),
-    #     utils.data_transforms.Normalize(mean=cfg.DATASET.MEAN, std=cfg.DATASET.STD),
-    #     utils.data_transforms.ToTensor(),
-    # ])
-    # for Pix3D
     val_transforms = utils.data_transforms.Compose([
         utils.data_transforms.CenterCrop(IMG_SIZE, CROP_SIZE),
+        utils.data_transforms.RandomBackground(cfg.TEST.RANDOM_BG_COLOR_RANGE),
         utils.data_transforms.Normalize(mean=cfg.DATASET.MEAN, std=cfg.DATASET.STD),
         utils.data_transforms.ToTensor(),
     ])
 
-    # Set up data loader  #建立数据加载器
+    # Set up data loader
     train_dataset_loader = utils.data_loaders.DATASET_LOADER_MAPPING[cfg.DATASET.TRAIN_DATASET](cfg)  # 默认都用shapenet
     val_dataset_loader = utils.data_loaders.DATASET_LOADER_MAPPING[cfg.DATASET.TEST_DATASET](cfg)
 
@@ -115,7 +108,7 @@ def setup_network(cfg, encoder, decoder, refiner, merger):
     if cfg.NETWORK.INIT_BACKBONE:
         encoder.init_backbone()
 
-    if torch.cuda.is_available():  # 并行计算
+    if torch.cuda.is_available():
         encoder = torch.nn.DataParallel(encoder).cuda()
         decoder = torch.nn.DataParallel(decoder).cuda()
         refiner = torch.nn.DataParallel(refiner).cuda()
@@ -125,7 +118,7 @@ def setup_network(cfg, encoder, decoder, refiner, merger):
         init_epoch = 0
         best_iou = -1
         best_epoch = -1
-        if cfg.TRAIN.RESUME_TRAIN and 'WEIGHTS' in cfg.CONST:  # RESUME_TRAIN默认False，为True时加载权重继续训练
+        if cfg.TRAIN.RESUME_TRAIN and 'WEIGHTS' in cfg.CONST:
             logging.info('Recovering from %s ...' % cfg.CONST.WEIGHTS)
             checkpoint = torch.load(cfg.CONST.WEIGHTS)
             init_epoch = checkpoint['epoch_idx'] + 1
@@ -134,9 +127,9 @@ def setup_network(cfg, encoder, decoder, refiner, merger):
 
             encoder.load_state_dict(checkpoint['encoder_state_dict'])
             decoder.load_state_dict(checkpoint['decoder_state_dict'])
-            if cfg.NETWORK.USE_REFINER:  # 设置是否启用refiner，默认开启
+            if cfg.NETWORK.USE_REFINER:
                 refiner.load_state_dict(checkpoint['refiner_state_dict'])
-            if cfg.NETWORK.USE_MERGER and cfg.TRAIN.LOAD_MERGER:  # 设置是否启用merger，默认开启
+            if cfg.NETWORK.USE_MERGER and cfg.TRAIN.LOAD_MERGER:
                 merger.load_state_dict(checkpoint['merger_state_dict'])
 
             logging.info('Recover complete. Current epoch #%d, Best IoU = %.4f at epoch #%d.' %
