@@ -16,7 +16,6 @@ import utils.helpers
 def reduce_branch_fps(features, left_view_num):
     samples = []
     remaining = list(range(features.shape[0]))
-    # center of gravity7.176
     center = features.mean(dim=0).unsqueeze(dim=0)
 
     # sampling the first point
