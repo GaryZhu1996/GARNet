@@ -49,7 +49,6 @@ def load_data(cfg):
     IMG_SIZE = cfg.CONST.IMG_H, cfg.CONST.IMG_W
     CROP_SIZE = cfg.CONST.CROP_IMG_H, cfg.CONST.CROP_IMG_W
     train_transforms = utils.data_transforms.Compose([
-        utils.data_transforms.RandomRotation(cfg.TRAIN.RANDOM_ROTATION),
         utils.data_transforms.RandomCrop(IMG_SIZE, CROP_SIZE),
         utils.data_transforms.RandomBackground(cfg.TRAIN.RANDOM_BG_COLOR_RANGE),
         utils.data_transforms.ColorJitter(cfg.TRAIN.BRIGHTNESS, cfg.TRAIN.CONTRAST, cfg.TRAIN.SATURATION),
