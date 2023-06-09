@@ -10,11 +10,13 @@ This repository contains the source code for the paper [GARNet: Global-Aware Mul
 ## Cite this work
 
 ```
-@article{zhu2022garnet,
+@article{zhu2023garnet,
   title={GARNet: Global-Aware Multi-View 3D Reconstruction Network and the Cost-Performance Tradeoff},
-  author={Zhu, Zhenwei and Yang, Liying and Lin, Xuxin and Jiang, Chaohao and Li, Ning and Yang, Lin and Liang, Yanyan},
-  journal={arXiv preprint arXiv:2211.02299},
-  year={2022}
+  author={Zhu, Zhenwei and Yang, Liying and Lin, Xuxin and Yang, Lin and Liang, Yanyan},
+  journal={Pattern Recognition},
+  pages={109674},
+  year={2023},
+  publisher={Elsevier}
 }
 ```
 
