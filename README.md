@@ -1,6 +1,6 @@
 # GARNet
 
-This repository contains the source code for the paper [GARNet: Global-Aware Multi-View 3D Reconstruction Network and the Cost-Performance Tradeoff](https://arxiv.org/abs/2211.02299).
+This repository contains the source code for the paper [GARNet: Global-Aware Multi-View 3D Reconstruction Network and the Cost-Performance Tradeoff](https://www.sciencedirect.com/science/article/abs/pii/S0031320323003758?via%3Dihub).
 
 ![Overview](/figures/overview.png)
 
